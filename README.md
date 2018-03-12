@@ -1,6 +1,5 @@
 # urban-farming-mongoose
 
-Better description...
 An application running on Mongoose OS on a ESP32 micro controller. 
 The application reads sensor data and publishes its values throug MQTT. 
 
