@@ -1,7 +1,7 @@
 # urban-farming-mongoose
 
 An application running on Mongoose OS on a ESP32 micro controller. 
-The application reads sensor data and publishes its values throug MQTT. 
+The application reads sensor data and publishes its values through MQTT. 
 
 | Sensors      |
 | --------- | 
@@ -34,13 +34,25 @@ https://github.com/jayway/urban-farming-mongoose.git
 | Micro Controllers      |
 | --------- | 
 | ESP32  |
-| Raspberry Pi |
 
 | Sensors      |
 | --------- | 
 | Soil moisture sensor  |
 | Humidity [DHT11](https://www.indiamart.com/proddetail/humidity-and-temperature-sensor-dht-11-14742150312.html) |
 | Light sensor [TSL2561](https://www.adafruit.com/product/439)|
+
+
+| ESP32  | TSL2561     | DHT11 | Soil fork |
+| --------- |--------- |--------- |--------- | 
+| Gnd  |  Gnd | Gnd | Gnd |
+| 3.3V  | 3vo | | Vcc |
+| 5V  | | Vcc |
+| SS/5/Led  | | Signal |
+| A4/32  | SDA ||
+| A5/33  | SCL ||
+| A6/34  ||| AO |
+
+
 
 
 
