@@ -19,8 +19,10 @@ let showerPin = 19;
 let mockShowerPin = 5;
 let mydht = DHT.create(dhtPin, DHT.DHT11);
 
+GPIO.set_mode(showerPin, GPIO.MODE_OUTPUT);
 GPIO.set_mode(mockShowerPin, GPIO.MODE_OUTPUT);
 GPIO.write(mockShowerPin, 1);
+GPIO.write(showerPin, 0);
 ADC.enable(forkPin);
 // Monitor network connectivity.
 Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
@@ -50,12 +52,14 @@ let getSensorData = function() {
   let forkData = ADC.read(forkPin);
   let deviceId = Cfg.get('device.id');
   let time = Timer.now();
+  let fullTime = Timer.fmt("%c", time);
   let sensors = {
     dht: dhtData,
     tsl: tslData,
     fork: forkData,
     deviceId: deviceId,
-    time: time
+    time: time,
+    timestamp: fullTime
   };
 
   return sensors;
@@ -96,20 +100,20 @@ MQTT.sub(showerSubTopic, function(conn, topic, msg) {
 }, null);
 
 let shower = function(milliSecs) {
+	GPIO.write(showerPin, 1);
 	GPIO.write(mockShowerPin, 0);
 	print('Showering');
-	Timer.set(milliSecs, false, function() {
+	Timer.set(milliSecs, 0, function() {
    		GPIO.write(mockShowerPin, 1);
+   		GPIO.write(showerPin, 0);
    		print('Done showering');
  	}, null);
 };
 
-/*
 //Frequently send data to AWS IoT with sensordata
 Timer.set(sendDataFreq, Timer.REPEAT, function() {
       sendData();
 }, null);
-*/
 
 GPIO.set_button_handler(button, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, function() {
   sendData();
