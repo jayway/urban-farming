@@ -42,12 +42,13 @@ https://github.com/jayway/urban-farming-mongoose.git
 | Light sensor [TSL2561](https://www.adafruit.com/product/439)|
 
 
-| ESP32  | TSL2561     | DHT11 | Soil fork |
-| --------- |--------- |--------- |--------- |
-| Gnd  |  Gnd | Gnd | Gnd |
-| 3.3V  | 3vo | | Vcc |
-| 5V  | | Vcc |
-| SCK/18  | | Signal |
-| A4/32  | SDA ||
-| A5/33  | SCL ||
-| A6/34  ||| AO |
+| ESP32  | TSL2561     | DHT11 | Soil fork | Shower |
+| --------- |--------- |--------- |--------- |--------- |
+| Gnd  |  Gnd | Gnd | Gnd | Gnd |
+| 3.3V  | 3vo | | Vcc | |
+| 5V  | | Vcc ||
+| SCK/18  | | Signal ||
+| A4/32  | SDA |||
+| A5/33  | SCL |||
+| A6/34  ||| AO ||
+| MISO/19||||Signal|
