@@ -11,7 +11,7 @@ load("api_adc.js");
 
 let sendDataFreq = 5000;
 let topic = 'urban';
-let showerSubTopic = 'urban/' + Cfg.get('device.id') + '/shower'
+let showerSubTopic = 'urban/' + Cfg.get('device.id') + '/shower';
 let forkPin = 34;
 let dhtPin = 18;
 let button = 17;
