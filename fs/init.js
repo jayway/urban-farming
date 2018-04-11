@@ -9,11 +9,17 @@ load('api_arduino_tsl2561.js');
 load("api_dht.js");
 load("api_adc.js");
 
+let sendDataFreq = 5000;
 let topic = 'jayway';
 let forkPin = 34;
-let dhtPin = 5;
+let dhtPin = 18;
+let button = 17;
+let showerPin = 19;
+let mockShowerPin = 5;
 let mydht = DHT.create(dhtPin, DHT.DHT11);
 
+GPIO.set_mode(mockShowerPin, GPIO.MODE_OUTPUT);
+GPIO.write(mockShowerPin, 1);
 ADC.enable(forkPin);
 // Monitor network connectivity.
 Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
@@ -40,13 +46,17 @@ tsl.begin();
 let getSensorData = function() {
   let dhtData = dhtGetData();
   let tslData = tslGetData();
-  let forkData = ADC.read(34);
+  let forkData = ADC.read(forkPin);
+  let deviceId = Cfg.get('device.id');
+  let time = Timer.now();
   let sensors = {
     dht: dhtData,
     tsl: tslData,
-    fork: forkData
+    fork: forkData,
+    deviceId: deviceId,
+    time: time
   };
-  
+
   return sensors;
 };
 
@@ -78,4 +88,28 @@ let sendData = function() {
   print('Published:', ok, topic, '->', message);
 };
 
-Timer.set(5000 /* 1 sec */, true /* repeat */, sendData, null);
+MQTT.sub('shower', function(conn, topic, msg) {
+     print('Topic:', topic, 'message:', msg);
+     let message = JSON.parse(msg);
+     shower(message.milliSecs);
+}, null);
+
+let shower = function(milliSecs) {
+	GPIO.write(mockShowerPin, 0);
+	print('Showering');
+	Timer.set(milliSecs, false, function() {
+   		GPIO.write(mockShowerPin, 1);
+   		print('Done showering');
+ 	}, null);
+};
+
+/*
+//Frequently send data to AWS IoT with sensordata
+Timer.set(sendDataFreq, Timer.REPEAT, function() {
+      sendData();
+}, null);
+*/
+
+GPIO.set_button_handler(button, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, function() {
+  sendData();
+}, null);
