@@ -10,7 +10,8 @@ load("api_dht.js");
 load("api_adc.js");
 
 let sendDataFreq = 5000;
-let topic = 'jayway';
+let topic = 'urban';
+let showerSubTopic = 'urban/' + Cfg.get('device.id') + '/shower'
 let forkPin = 34;
 let dhtPin = 18;
 let button = 17;
@@ -88,7 +89,7 @@ let sendData = function() {
   print('Published:', ok, topic, '->', message);
 };
 
-MQTT.sub('shower', function(conn, topic, msg) {
+MQTT.sub(showerSubTopic, function(conn, topic, msg) {
      print('Topic:', topic, 'message:', msg);
      let message = JSON.parse(msg);
      shower(message.milliSecs);
