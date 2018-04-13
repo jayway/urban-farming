@@ -91,4 +91,4 @@ Reboot the device by clicking on the reset button on device.
 | A4/32  | SDA |||
 | A5/33  | SCL |||
 | A6/34  ||| AO ||
-| MISO/19||||Signal|
+| SCL/22||||Signal|
