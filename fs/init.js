@@ -9,19 +9,20 @@ load('api_arduino_tsl2561.js');
 load("api_dht.js");
 load("api_adc.js");
 
-let sendDataFreq = 5000;
+let freq = 5000;
 let topic = 'urban';
 let showerSubTopic = 'urban/' + Cfg.get('device.id') + '/shower';
 let forkPin = 34;
-let dhtPin = 18;
-let button = 17;
-let showerPin = 19;
-let mockShowerPin = 5;
+let dhtPin = 21;
+let showerPin = 22;
+let mock = 5;	//built-in led pin on esp32-WROOM432
+let btn = 17;
 let mydht = DHT.create(dhtPin, DHT.DHT11);
 
 GPIO.set_mode(showerPin, GPIO.MODE_OUTPUT);
-GPIO.set_mode(mockShowerPin, GPIO.MODE_OUTPUT);
-GPIO.write(mockShowerPin, 1);
+GPIO.set_mode(mock, GPIO.MODE_OUTPUT);
+//built in led pin 5 turns on when low and off att high
+GPIO.write(mock, 1);
 GPIO.write(showerPin, 0);
 ADC.enable(forkPin);
 // Monitor network connectivity.
@@ -79,42 +80,42 @@ let tslGetData = function() {
     let vis = tsl.getVisible();
     let ir = tsl.getInfrared();
     let lux = tsl.calculateLux(vis, ir);
-    let readings = {
-      visread: vis,
-      irread: ir,
-      luxread: lux
+    let data = {
+      vis: vis,
+      ir: ir,
+      lux: lux
     };
-    return readings;
+    return data;
 };
 
-let sendData = function() {
-  let message = JSON.stringify(getSensorData());
-  let ok = MQTT.pub(topic, message, 1);
-  print('Published:', ok, topic, '->', message);
+let send = function() {
+  let msg = JSON.stringify(getSensorData());
+  let ok = MQTT.pub(topic, msg, 1);
+  print('Published:', ok, topic, '->', msg);
 };
 
 MQTT.sub(showerSubTopic, function(conn, topic, msg) {
      print('Topic:', topic, 'message:', msg);
-     let message = JSON.parse(msg);
-     shower(message.milliSecs);
+     shower(JSON.parse(msg).milliSecs);
 }, null);
 
 let shower = function(milliSecs) {
 	GPIO.write(showerPin, 1);
-	GPIO.write(mockShowerPin, 0);
-	print('Showering');
+	GPIO.write(mock, 0);
+	//print('Showering');
 	Timer.set(milliSecs, 0, function() {
-   		GPIO.write(mockShowerPin, 1);
+   		GPIO.write(mock, 1);
    		GPIO.write(showerPin, 0);
-   		print('Done showering');
+   		//print('Done showering');
  	}, null);
 };
 
 //Frequently send data to AWS IoT with sensordata
-Timer.set(sendDataFreq, Timer.REPEAT, function() {
-      sendData();
+Timer.set(freq, Timer.REPEAT, function() {
+      send();
 }, null);
 
-GPIO.set_button_handler(button, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, function() {
-  sendData();
+//If button connected
+GPIO.set_button_handler(btn, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, function() {
+  foo();
 }, null);
