@@ -69,11 +69,12 @@ Reboot the device by clicking on the reset button on device.
 ## Connect to AWS IoT
 
 
+
 ## Hardware
 
 | Micro Controllers      |
 | --------- |
-| ESP32  |
+| [ESP32](https://wiki.wemos.cc/products:lolin32:lolin32) |
 
 | Sensors      |
 | --------- |
@@ -87,8 +88,8 @@ Reboot the device by clicking on the reset button on device.
 | Gnd  |  Gnd | Gnd | Gnd | Gnd |
 | 3.3V  | 3vo | | Vcc | |
 | 5V  | | Vcc ||
-| SDA/21  | | Signal ||
+| SCL/22  | | Signal ||
 | A4/32  | SDA |||
 | A5/33  | SCL |||
 | A6/34  ||| AO ||
-| SCL/22||||Signal|
+| SDA/21||||Signal|
