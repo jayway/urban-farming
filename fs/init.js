@@ -9,15 +9,14 @@ load('api_arduino_tsl2561.js');
 load("api_dht.js");
 load("api_adc.js");
 
-let freq = 5000;
-let topic = 'urban/' + Cfg.get('device.id');
-let showerSubTopic = 'urban/' + Cfg.get('device.id') + '/shower';
-let forkPin = 34;
+let freq = 10000;
+let topic = 'hydro/' + Cfg.get('device.id');
+let showerSubTopic = 'hydro/' + Cfg.get('device.id') + '/shower';
 let dhtPin = 22;
 let showerPin = 21;
 let mock = 5;	//built-in led pin on Lolin32 board
 let mydht = DHT.create(dhtPin, DHT.DHT11);
-//let btn = 17; //if button is connected to the board
+let btn = 17; //if button is connected to the board
 
 
 // Enable pins at start. Built in led pin 5 turns on when low and off att high
@@ -25,7 +24,6 @@ GPIO.set_mode(showerPin, GPIO.MODE_OUTPUT);
 GPIO.set_mode(mock, GPIO.MODE_OUTPUT);
 GPIO.write(mock, 0);
 GPIO.write(showerPin, 0);
-ADC.enable(forkPin);
 
 // Initialize Adafruit_TSL2561 library
 let tsl = Adafruit_TSL2561.create();
@@ -52,43 +50,23 @@ Event.addGroupHandler(Net.EVENT_GRP, function(ev, evdata, arg) {
 
 
 let getSensorData = function() {
-  let dhtData = dhtGetData();
-  let tslData = tslGetData();
-  let forkData = ADC.read(forkPin);
+  let vis = tsl.getVisible();
+  let ir = tsl.getInfrared();
+  let temp = mydht.getTemp();
+  let hum = mydht.getHumidity();
+  let lux = tsl.calculateLux(vis, ir);
   let id = Cfg.get('device.id');
   let time = Timer.now();
   let fullTime = Timer.fmt("%c", time);
   let sensors = {
-    dht: dhtData,
-    tsl: tslData,
-    fork: forkData,
+    Temp: temp,
+    Humidity: hum,
+    Lux: lux,
     deviceId: id,
-    time: time,
-    timestamp: fullTime
+    Timestamp: time,
+    Time: fullTime
   };
   return sensors;
-};
-
-let dhtGetData = function() {
-  let temp = mydht.getTemp();
-  let hum = mydht.getHumidity();
-  let data = {
-    temp: temp,
-    hum: hum
-  };
-  return data;
-};
-
-let tslGetData = function() {
-    let vis = tsl.getVisible();
-    let ir = tsl.getInfrared();
-    let lux = tsl.calculateLux(vis, ir);
-    let data = {
-      vis: vis,
-      ir: ir,
-      lux: lux
-    };
-    return data;
 };
 
 let send = function() {

@@ -8,12 +8,7 @@ modules_version: ${mos.version}
 mongoose_os_version: ${mos.version}
 
 config_schema:
-  - ["mqtt.server", "10.0.201.217:1883"]
-  - ["mqtt.enable", true]
   - ["i2c.enable", true]
-  - ["wifi.sta.enable", true]
-  - ["wifi.sta.ssid", "JaywayGuest"]
-  - ["wifi.sta.pass", "jaywayguest"]
 
 tags:
   - js
